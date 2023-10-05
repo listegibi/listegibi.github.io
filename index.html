@@ -97,7 +97,7 @@
         list.addEventListener("dragstart", dragging);
         list.addEventListener("drop", dropped);
         list.addEventListener("touchmove", dragging);
-        list.addEventListener("touchleave", dropped);
+        list.addEventListener("touchend", dropped);
 
         function makeSortable() {
             new Sortable(list, {
