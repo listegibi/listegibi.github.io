@@ -82,17 +82,22 @@
             hideLoading();
         }
 
-        document.addEventListener("dragstart", () => {
+        function dragging() {
             navbar.style.display = 'none';
-        });
+        }
 
-        document.addEventListener("drop", () => {
+        function dropped() {
             let rank = 0;
             document.querySelectorAll(".rank").forEach(element => {
                 element.innerText = ++rank;
             });
             navbar.style.display = 'block';
-        })
+        }
+
+        list.addEventListener("dragstart", dragging);
+        list.addEventListener("drop", dropped);
+        list.addEventListener("touchmove", dragging);
+        list.addEventListener("touchleave", dropped);
 
         function makeSortable() {
             new Sortable(list, {
@@ -221,8 +226,8 @@
         }
 
         ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -230,8 +235,8 @@
         }
 
         ::-moz-scrollbar {
-            width: 4px;
-            height: 4px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-moz-scrollbar-thumb {
@@ -239,8 +244,8 @@
         }
 
         ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-thumb {
