@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!--
+        Liste Gibi
+        2023-10-05 01:40 R.0
+        æ
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <!-- https://icons8.com -->
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <title>Liste Gibi</title>
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body class="noscroll">
+    <nav class="navbar bg-warning fixed-nav" id="navbar">
+        <table width="100%">
+            <tr>
+                <td>
+                    <button class="btn btn-outline-secondary mx-1" id="btnup"><i class="bi bi-file-arrow-up"></i></button>
+                </td>
+                <td>
+                    <button class="btn btn-outline-secondary mx-1" id="btndown"><i class="bi bi-file-arrow-down"></i></button>
+                </td>
+                <td width="100%">
+                    <h4 class="text-dark"><img src="favicon.png" height="20">Liste Gibi</h4>
+                </td>
+
+                <td>
+                    <button class="btn btn-primary mx-1"><i class="bi bi-backspace"></i></button>
+                </td>
+                <td>
+                    <button class="btn btn-success mx-1 hidden" id="btnsave"><i class="bi bi-floppy"></i></button>
+                </td>
+            </tr>
+        </table>
+    </nav>
+    <div class="container top-blank">
+        <div id="simple-list" class="row">
+            <div id="list" class="list-group col">
+            </div>
+        </div>
+    </div>
+    <div class="overlay" id="loading">
+        <div class="spinner-border text-primary" style="width: 5rem; height: 5rem;" role="status">
+            <span class="sr-only"></span>
+        </div>
+    </div>
+    <script src="sortable.js"></script>
+    <script src="db.js"></script>
+    <script>
+        const navbar = document.getElementById('navbar');
+        const list = document.getElementById('list');
+        const btnsave = document.getElementById('btnsave');
+        const btnup = document.getElementById('btnup');
+        const btndown = document.getElementById('btndown');
+        const loading = document.getElementById('loading');
+
+        var database = null;
+        let initStateList = [];
+        let saveStateList = []
+
+        btnup.addEventListener("click", () => {
+            window.scrollBy(0, -window.innerHeight * 0.8);
+        })
+
+        btndown.addEventListener("click", () => {
+            window.scrollBy(0, window.innerHeight * 0.8);
+        })
+
+        async function getUserList() {
+            showLoading();
+            const episodes = await database.GetUserList();
+            initStateList = [];
+            let rank = 0;
+            list.innerHTML = "";
+            episodes.forEach(element => {
+                initStateList.push(element.id);
+                list.innerHTML += `<div class="list-group-item"><sortable-item ssrc="${element.src}" srank="${++rank}" sseason="${element.id}" sname="${element.name}" sinfo="${element.imdb}"></sortable-item></div>`;
+            });
+            hideLoading();
+        }
+
+        function dragging() {
+            navbar.style.display = 'none';
+        }
+
+        function dropped() {
+            let rank = 0;
+            document.querySelectorAll(".rank").forEach(element => {
+                element.innerText = ++rank;
+            });
+            saveStateList = [];
+            document.querySelectorAll(".season").forEach(element => {
+                saveStateList.push(parseInt(element.innerText.split(' ')[0]));
+            });
+            if (JSON.stringify(saveStateList) != JSON.stringify(initStateList)) {
+                btnsave.classList.remove('hidden');
+            } else {
+                btnsave.classList.add('hidden');
+            }
+            navbar.style.display = 'block';
+        }
+
+        list.addEventListener("dragstart", dragging);
+        list.addEventListener("drop", dropped);
+        list.addEventListener("touchmove", dragging);
+        list.addEventListener("touchend", dropped);
+
+        function makeSortable() {
+            new Sortable(list, {
+                animation: 150,
+                ghostClass: 'blue-background-class'
+            });
+        }
+
+        btnsave.addEventListener("click", async () => {
+            showLoading();
+            await database.SaveUserList(saveStateList);
+            await getUserList();
+            hideLoading();
+        });
+
+        function showLoading() {
+            loading.style.display = 'grid';
+            document.body.classList.add('noscroll');
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+            document.body.classList.remove('noscroll');
+        }
+
+        database = new db("anil");
+
+        getUserList();
+        makeSortable();
+    </script>
+    <style>
+        body {
+            background-color: #ececec80;
+        }
+
+        .blue-background-class {
+            background-color: rgb(205, 222, 253) !important;
+        }
+
+        .img-banner {
+            margin-right: 10px;
+            border-radius: 5px;
+            box-shadow: 4px 4px 8px gray;
+            height: 45px;
+            width: 80px;
+            object-fit: cover;
+            float: left;
+        }
+
+        p {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1;
+            margin: 0px;
+            color: rgb(170, 170, 170);
+        }
+
+        h5 {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin: 0px;
+            margin-bottom: 2px
+        }
+
+        .list-group-item:nth-child(even) {
+            background-color: #ececec10;
+        }
+
+        .list-group-item:hover {
+            background-color: #ececec;
+        }
+
+        .top-blank {
+            margin-top: 50px;
+            margin-bottom: 10px;
+        }
+
+        .fixed-nav {
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            position: fixed;
+            z-index: 10;
+        }
+
+        .rank {
+            width: 20px;
+            text-align: center;
+            float: left;
+            color: white !important;
+            background-color: rgba(192, 192, 192, 1);
+            margin: 0px;
+            margin-right: 4px;
+            padding: 0px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .season {
+            display: none;
+        }
+
+        .overlay {
+            position: fixed;
+            display: grid;
+            align-items: center;
+            justify-content: center;
+            top: 0px;
+            left: 0px;
+            width: 100vw;
+            height: 100vh;
+            z-index: 20;
+            background-color: #000000cb;
+        }
+
+        .noscroll {
+            overflow: hidden;
+        }
+
+        .hidden {
+            visibility: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+        }
+
+        ::-moz-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-moz-scrollbar-thumb {
+            background-color: #ccc;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+        }
+    </style>
+</body>
+
+</html>
