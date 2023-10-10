@@ -1,7 +1,0 @@
-        // Make list-group-item as component
-        // Make Save and Back is only icon buttons
-        // Watch changes for enable / disable Save button
-        // Toggle mode: Scroll or Edit List
-        // New buttons for Up / Down scroll on edit mode 
-        // Inform you are in scroll mode if edit mode is inactive
-        // Img tag alt="" loading="lazy" onerror="this.src='error.jpg'"
