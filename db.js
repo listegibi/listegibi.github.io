@@ -1,12 +1,15 @@
 class db {
-    constructor(username) {
+    constructor(username, culture) {
         this.username = username;
+        this.culture = culture;
         this.data = {
             user: "anil",
             pass: "123",
             updt: "2023-10-05 21:04:00",
             list: [112, 104, 101, 108, 106, 103, 107, 109, 110, 111, 105, 102]
         };
+        this.modalText = "";
+        this.modalClose = db.i18n[this.culture].close;
     }
 
     static episodes = [
@@ -54,6 +57,15 @@ class db {
         { id: 410, name: "S4.E10 M.Ö. 2998-2997 Eğitim Öğretim Yılı", imdb: "Jun 2, 2023 - Yilmaz, a teacher in a village in ancient time Mesopotamia, tries to teach writing to the village.", src: "MV5BMWIxNmU4ZGMtYjViMi00NWIzLWFjYzYtYTkzNjgxZjY5NmJmXkEyXkFqcGdeQXVyNDg4MjkzNDk@._V1_QL75_UX500_CR0,109,500,281_" }
     ];
 
+    static i18n = {
+        trTR: {
+            saveDisable: "Beklenmeyen bir hata kayıt etmeyi engelliyor!",
+            saveError: "Beklenmeyen bir hata meydana geldi!",
+            saveSuccess: "Kayıt edildi.",
+            close: "Tamam"
+        }
+    }
+
     async GetUserList() {
         await new Promise(resolve => setTimeout(resolve, 200));
         if (this.username == "") {
@@ -71,9 +83,17 @@ class db {
     }
 
     async SaveUserList(userList) {
-        this.data.list = userList;
-        await new Promise(resolve => setTimeout(resolve, 200));
-        await this.GetHallOfFame();
+        if (userList.length != db.episodes.length) {
+            return this.modalText = db.i18n[this.culture].saveDisable;
+        }
+        try {
+            this.data.list = userList;
+            await new Promise(resolve => setTimeout(resolve, 200));
+            await this.GetHallOfFame();
+            this.modalText = db.i18n[this.culture].saveSuccess;
+        } catch (error) {
+            this.modalText = `${db.i18n[this.culture].saveError}<br /><i style="display: none;">${error}</i>`;
+        }
     }
 
     async GetHallOfFame() {
@@ -107,13 +127,12 @@ class db {
     }
 }
 
+// class SortableItem extends HTMLElement {
+//     connectedCallback() {
+//         this.innerHTML = `<img src="https://m.media-amazon.com/images/M/${this.getAttribute('ssrc')}.jpg" loading="lazy" alt="" onerror="this.src='error.jpg'" class="img-banner">
+// <span class="rank text-secondary">${this.getAttribute('srank')}</span><span class="season">${this.getAttribute('sseason')}</span>
+// <h5>${this.getAttribute('sname')}</h5><p>${this.getAttribute('sinfo')}</p>`;
+//     }
+// }
 
-class SortableItem extends HTMLElement {
-    connectedCallback() {
-        this.innerHTML = `<img src="https://m.media-amazon.com/images/M/${this.getAttribute('ssrc')}.jpg" loading="lazy" alt="" onerror="this.src='error.jpg'" class="img-banner"> 
-        <span class="rank text-secondary">${this.getAttribute('srank')}</span><span class="season">${this.getAttribute('sseason')}</span>
-        <h5>${this.getAttribute('sname')}</h5><p>${this.getAttribute('sinfo')}</p>`;
-    }
-}
-
-customElements.define("sortable-item", SortableItem);
+// customElements.define("sortable-item", SortableItem);
