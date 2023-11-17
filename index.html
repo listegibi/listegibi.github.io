@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
     <!-- https://icons8.com -->
-    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.png">
     <title>Liste Gibi</title>
     <style>
         * {
@@ -109,7 +109,7 @@
             episodes.forEach(element => {
                 initStateList.push(element.id);
                 // list.innerHTML += `<sortable-item ssrc="${element.src}" srank="${++rank}" sseason="${element.id}" sname="${element.name}" sinfo="${element.imdb}"></sortable-item>`;
-                list.innerHTML += `<div class="list-group-item"><img src="https://m.media-amazon.com/images/M/${element.src}.jpg" loading="lazy" alt="" onerror="this.src='error.jpg'" class="img-banner"> 
+                list.innerHTML += `<div class="list-group-item"><img src="https://m.media-amazon.com/images/M/${element.src}.jpg" loading="lazy" alt="" onerror="this.src='assets/error.jpg'" class="img-banner"> 
                                     <span class="rank text-secondary">${++rank}</span><span class="season">${element.id}</span>
                                     <h5>${element.name}</h5><p>${element.imdb}</p></div>`;
             });
