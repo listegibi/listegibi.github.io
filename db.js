@@ -6,7 +6,7 @@ class db {
             user: "anil",
             pass: "123",
             updt: "2023-10-05 21:04:00",
-            list: [112, 104, 101, 108, 106, 103, 107, 109, 110, 111, 105, 102]
+            list: []
         };
         this.modalText = "";
         this.modalClose = db.i18n[this.culture].close;
