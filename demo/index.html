@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+    <!--
+        drag-drop-sort
+        2023-11-29
+        æ
+    -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@3.4.4/dist/vuetify.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    <link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII=" rel="icon" type="image/x-icon" />
+    <title>Document</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@3.4.4/dist/vuetify.min.js"></script>
+
+    <div id="app">
+        <v-layout class="rounded rounded-md">
+            <v-app-bar title="Application bar" elevation="2"><v-icon icon="mdi-home" size="large" color="blue-lighten-4"></v-icon></v-app-bar>
+            <v-main>
+                <v-btn>{{ message }}</v-btn>
+
+                <ul class="sortable-list">
+                    <li v-for="item in sortableList" class="item" draggable="true">
+                        <div>{{ item.name }}</div>
+                    </li>
+                </ul>
+
+            </v-main>
+        </v-layout>
+    </div>
+
+    <script>
+        const { createApp, ref, reactive } = Vue;
+        const { createVuetify } = Vuetify;
+
+        createApp({
+            setup() {
+                const message = ref('Hello vue!');
+                const sortableList = reactive([{ name: "Donald James Zasiadko" }, { name: "Ronelle Hayden" }, { name: "Gabriel Zasiadko" }, { name: "Kristina Zasiadko" }, { name: "Gabriel Wilson" }, { name: "Ronelle Cesicon" }, { name: "James Khosravi" }, { name: "Annika Hayden" }, { name: "Donald Horton" },{ name: "Donald James Zasiadko" }, { name: "Ronelle Hayden" }, { name: "Gabriel Zasiadko" }, { name: "Kristina Zasiadko" }, { name: "Gabriel Wilson" }, { name: "Ronelle Cesicon" }, { name: "James Khosravi" }, { name: "Annika Hayden" }, { name: "Donald Horton" }]);
+                return {
+                    message, sortableList
+                }
+            }
+        }).use(createVuetify()).mount('#app');
+
+        const sortableList = document.querySelector(".sortable-list");
+        const items = sortableList.querySelectorAll(".item");
+
+        items.forEach(item => {
+            item.addEventListener("dragstart", (e) => {
+                setTimeout(item.classList.add("dragging"), 0);
+            });
+            item.addEventListener("touchstart", (e) => {
+                setTimeout(item.classList.add("dragging"), 0);
+            });
+            item.addEventListener("dragend", () => item.classList.remove("dragging"));
+            item.addEventListener("touchend", () => item.classList.remove("dragging"));
+        });
+        const initSortableList = (e) => {
+            e.preventDefault();
+            const draggingItem = document.querySelector(".dragging");
+            let siblings = [...sortableList.querySelectorAll(".item:not(.dragging)")];
+            let nextSibling = siblings.find(sibling => {
+                return (e.clientY || e.touches[0].clientY) <= sibling.getBoundingClientRect().top + sibling.offsetHeight / 2;
+            });
+            sortableList.insertBefore(draggingItem, nextSibling);
+        }
+        sortableList.addEventListener("dragover", initSortableList);
+        sortableList.addEventListener("touchmove", initSortableList);
+        sortableList.addEventListener("dragenter", e => e.preventDefault());
+    </script>
+    <style>
+        .sortable-list {
+            width: 425px;
+            padding: 25px;
+            background: #fff;
+            border-radius: 7px;
+            padding: 30px 25px 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .sortable-list .item {
+            list-style: none;
+            display: flex;
+            cursor: move;
+            background: #fff;
+            align-items: center;
+            border-radius: 5px;
+            padding: 10px 13px;
+            margin-bottom: 11px;
+            /* box-shadow: 0 2px 4px rgba(0,0,0,0.06); */
+            border: 1px solid #ccc;
+            justify-content: space-between;
+        }
+
+        .item.dragging {
+            background-color: aliceblue;
+        }
+    </style>
+</body>
+
+</html>
